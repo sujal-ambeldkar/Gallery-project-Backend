@@ -9,8 +9,13 @@ const app = express();
 // Connect DB
 connectDB();
 
+// CORS – allow your Vercel frontend
+app.use(cors({
+  origin: "https://YOUR-FRONTEND-NAME.vercel.app", // ← change this
+  credentials: false
+}));
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 
 // Routes
@@ -28,5 +33,5 @@ app.use("/api/location", locationRoutes);
 // Start server (ONLY ONCE)
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
