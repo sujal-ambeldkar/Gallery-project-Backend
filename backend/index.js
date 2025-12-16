@@ -5,7 +5,23 @@ const connectDB = require("./db");
 
 const app = express();
 
-connectDB();
+// Global error logging for crashes
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
+});
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection:", reason);
+});
+
+// Connect DB with logging
+(async () => {
+  try {
+    await connectDB();
+    console.log("connectDB completed");
+  } catch (err) {
+    console.error("Error in connectDB:", err);
+  }
+})();
 
 app.use(cors({
   origin: [
@@ -24,19 +40,22 @@ app.use((req, res, next) => {
   next();
 });
 
-// then your route mounts...
-
-
 // Routes
-const mediaRoutes = require("./routes/mediaRoutes");
-const authRoutes = require("./routes/authRoutes");
-const noteRoutes = require("./routes/noteRoutes");
-const locationRoutes = require("./routes/location.routes");
+let mediaRoutes, authRoutes, noteRoutes, locationRoutes;
+try {
+  mediaRoutes = require("./routes/mediaRoutes");
+  authRoutes = require("./routes/authRoutes");
+  noteRoutes = require("./routes/noteRoutes");
+  locationRoutes = require("./routes/location.routes");
+  console.log("Routes loaded successfully");
+} catch (err) {
+  console.error("Error loading routes:", err);
+}
 
-app.use("/api/media", mediaRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/notes", noteRoutes);
-app.use("/api/location", locationRoutes);
+if (mediaRoutes) app.use("/api/media", mediaRoutes);
+if (authRoutes) app.use("/api/auth", authRoutes);
+if (noteRoutes) app.use("/api/notes", noteRoutes);
+if (locationRoutes) app.use("/api/location", locationRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
