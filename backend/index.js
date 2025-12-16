@@ -1,4 +1,3 @@
-// index.js
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
@@ -9,36 +8,31 @@ const app = express();
 // Connect DB
 connectDB();
 
-// CORS – allow your real frontend
-const allowedOrigins = [
-  "https://gallery-project-rose.vercel.app", // your Vercel frontend
-  "http://localhost:5500",                   // optional: for local testing
-];
-
+// CORS – simple and safe
 app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like Postman or curl)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(new Error("Not allowed by CORS"));
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: false, // you are not sending cookies, only Bearer tokens
-}));
-
-// Preflight
-app.options("*", cors({
-  origin: allowedOrigins,
+  origin: [
+    "https://gallery-project-rose.vercel.app", // your Vercel frontend
+    "http://localhost:5500",                   // optional for local testing
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: false,
 }));
 
-// Middleware
+// Optional: handle preflight explicitly
+app.options("*", cors({
+  origin: [
+    "https://gallery-project-rose.vercel.app",
+    "http://localhost:5500",
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: false,
+}));
+
 app.use(express.json());
 
-// Routes
+// Routes...
 const mediaRoutes = require("./routes/mediaRoutes");
 const authRoutes = require("./routes/authRoutes");
 const noteRoutes = require("./routes/noteRoutes");
