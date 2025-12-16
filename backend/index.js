@@ -20,7 +20,7 @@ app.use(cors({
   credentials: false,
 }));
 
-// DO NOT add app.options("*", ...) – it is causing the path-to-regexp error
+// NO app.options("*", ...) here!
 
 app.use(express.json());
 
